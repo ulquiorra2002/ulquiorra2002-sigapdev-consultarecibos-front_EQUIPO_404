@@ -1,0 +1,75 @@
+.modal-content {
+    max-height: 1000px;
+    overflow: scroll;
+  }
+  
+  .reducir{
+      margin-top:-15px;
+  }
+  .reducir-dos{
+      margin-top:1px;
+  }
+  .modall{
+  border-bottom: 0px;
+  }
+  
+  #columna{
+      margin-right: 10px;
+  }
+  
+  #separar-1{
+      margin-bottom: 10px;
+      width: 50%;
+      float: left;
+  }
+  
+  #separar-2{
+      margin-bottom: 10px;
+      width: 50%;
+      float: right;
+  }
+  
+  #div-uno{
+    width: 400px;
+    float: left;
+  }
+  #div-dos{
+    width: 400px;
+    float: right;
+  }
+  #columna-boton{
+      margin-right: 15px;
+      margin-left: 10px;
+  }
+  #btnAsignar{
+      margin-top: 30px;
+  }
+  #principal{
+      text-align: center;
+  }
+  
+  .modal-centrado{
+      width: 800px;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 10px;
+      margin-bottom: -10px;
+      text-align: left;
+  }
+  
+  .left-bottom{
+      margin-right: 520px;
+  }
+  
+  .left-h5{
+      margin-right: 480px;
+  }	
+  
+  .left-h3{
+      margin-right: 500px;
+      text-align: center;
+  }
+  .campo{
+      margin-left: 33px;
+  }		
+  
