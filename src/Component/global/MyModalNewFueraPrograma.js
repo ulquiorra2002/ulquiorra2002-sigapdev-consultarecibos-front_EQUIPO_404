@@ -56,11 +56,10 @@ class MyModal extends Component {
       });
   }
   async handlerGuardarAlumno2(data) {
-    this.nombre=document.getElementById("nombre").value;
     var dataAlumno = {};
-    dataAlumno.cod_alum = null;
-    dataAlumno.nombre = document.getElementById("nombre").value;
-    dataAlumno.dni = document.getElementById("dnialumno").value;
+    dataAlumno.cod_alum = this.props.codigo;
+    dataAlumno.nombre = this.nombre;
+    dataAlumno.dni = this.dni;
     console.log(dataAlumno);
     this.dni = dataAlumno.dni;
     if (dataAlumno.cod_alum !== "" ||
@@ -80,19 +79,8 @@ class MyModal extends Component {
       })
       const responseJson = await response.json();
       if (response.ok) {
-        Swal.fire({
-          title: 'Registrando Recaudacion',
-          text: "Seguro?",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Si'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            this.handleBuscaAlumno(data);
-          }
-        })
+      this.handleBuscaAlumno(data);
+      
       } else {
         alert("FALLÓ OPERACIÓN, ESPERE UN MOMENTO Y VUELVA A INTENTARLO ");
       }
@@ -177,6 +165,7 @@ class MyModal extends Component {
       verif = false;
     }
     this.dni=document.getElementById("dnialumno").value;
+    this.nombre=document.getElementById("nombre").value;
     var data = {};
     data.id_alum = this.añadido;
     data.id_concepto = document.getElementById("conceptoPago").value;
@@ -195,16 +184,22 @@ class MyModal extends Component {
     ModalManager.close();
     console.log(data);
     if (
-      data.id_concepto !== "" ||
-      data.id_ubicacion !== "" ||
-      data.cod_alum !== "" ||
-      data.numero !== "" ||
-      data.fecha !== "" ||
-      data.id_tipo !== "" ||
-      data.id_tipo !== "undefined"||
-      data.id_programa!==""
+      data.numero !== "" &&
+      data.fecha !== "" && data.importe!==""
     ) {
-      this.handlerGuardarAlumno2(data);
+      Swal.fire({
+        title: ' ¿Está seguro de registrar el recibo de pago? ',
+        text: "Seguro?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.handlerGuardarAlumno2(data);
+        }
+      })
 
       console.log(this.añadido);
       data.id_alum = this.añadido;
@@ -227,7 +222,7 @@ class MyModal extends Component {
     })
       .then(res => res.json())
       .then(res => {
-        if (res.status) {
+        if (res.response===1) {
           // exito
           console.log(res.status);
           alert("Datos creados exitosamente");
@@ -381,6 +376,7 @@ class MyModal extends Component {
         }
       });
   }
+
   render() {
     let codigo = this.props.codigo;
     console.log(codigo);
@@ -408,6 +404,7 @@ class MyModal extends Component {
                   className="form-control"
                   placeholder="DNI"
                   id="dnialumno"
+                  maxLength="8"
                   required
                 />
               </div>
@@ -418,7 +415,7 @@ class MyModal extends Component {
                   className="form-control"
                   placeholder="Nombres"
                   id="nombre"
-                  required
+                  onInput={(e) => e.target.value = ("" + e.target.value).toUpperCase()}                  required
                 />
               </div>
             </div>

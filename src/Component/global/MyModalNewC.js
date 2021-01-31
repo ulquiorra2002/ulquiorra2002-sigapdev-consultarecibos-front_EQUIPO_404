@@ -6,6 +6,7 @@ import "./css/bootstrap.css";
 import "./css/NewC.css";
 import "./css/ListarComprobanteNewC.css";
 import { data } from "jquery";
+import Swal from "sweetalert2";
 class MyModal extends Component {
   constructor() {
     super();
@@ -75,14 +76,20 @@ class MyModal extends Component {
     ModalManager.close();
     console.log(data);
     if (
-      data.id_concepto !== "" ||
-      data.id_ubicacion !== "" ||
-      data.codigo !== "" ||
-      data.numero !== "" ||
-      data.fecha !== "" ||
-      data.tipo !== "" ||
-      data.tipo !== "undefined"
+      data.numero !== "" &&
+      data.fecha !== "" && data.importe!==""
     ) {
+      Swal.fire({
+        title: '¿Está seguro de registrar el recibo de pago? ',
+        text: "Seguro?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si'
+      }).then((result) => {
+        if (result.isConfirmed) {
+
       const url = URL.url.concat("recaudaciones/new");
       //const url= 'https://modulocontrol.herokuapp.com/recaudaciones/new';
       //onst url = "http://localhost:7896/recaudaciones/new";
@@ -107,6 +114,10 @@ class MyModal extends Component {
             alert("FALLÓ OPERACIÓN, ESPERE UN MOMENTO Y VUELVA A INTENTARLO ");
           }
         });
+
+        }
+      })
+      
     } else {
       alert("Rellene todos los campos");
     }

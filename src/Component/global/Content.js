@@ -36,7 +36,9 @@ class Content extends Component {
             sigla: "",
             idPrograma: "",
             id: "",
-            validado: false
+            validado: false,
+            dnibuscado:"",
+            recaudacion:""
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -65,7 +67,7 @@ class Content extends Component {
 
 
         if (cod != "") {
-            this.handleBuscaAlumnoPrograma();
+            this.handleBuscaAlumnoRecaudacion();
             
             e.preventDefault()
 
@@ -87,8 +89,14 @@ class Content extends Component {
         })
         var arra={
             nombre: this.state.nombre,
-            dni: this.state.dni
+            dni: this.state.dnibuscado
         }
+        /*let texterror='El alumno ';
+        let textnombre=texterror.concat(this.state.codigo);
+        let textguion=textnombre.concat('-');
+        let textcodigo=textguion.concat(nombrecorregido);
+        let textoerror1=' no tiene ningún recibo de pago registrado en el Sistema'
+        let error=textcodigo.concat(textoerror1);*/
         const url = URL.url.concat('alumno/detallado/');
         // const url= 'https://api-modulocontrol.herokuapp.com/conceptos';
         fetch(url, {
@@ -106,6 +114,7 @@ class Content extends Component {
                     // if(JSON.stringify(apoyo)=='{}'){
                     //if(Object.keys(data).length === 0){
                     this.setState({
+                        id: data["data"][0]["id_alum"],
                         nombre: data["data"][0]["ape_nom"]
                     })
                     if(this.state.nombre!=""){
@@ -116,19 +125,7 @@ class Content extends Component {
                     alert("Fallo al cargar datos, Intentelo mas tarde");
                 }
             }).catch(err => {
-                Swal.fire({
-                    title: 'Código no encontrado en el Alumno',
-                    text: "Desea ingresar el recibo?",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Si'
-                }).then((result) => {
-                    if (result.isConfirmed) {
                         this.handleBuscaSiglaFueraAlumno();
-                    }
-                })
                 console.log(err);
             }
             )
@@ -160,7 +157,7 @@ class Content extends Component {
                         <Modal3
                             id={this.state.id}
                             sigla={this.state.sigla}
-                            dni={this.state.dni}
+                            dni={this.state.dnibuscado}
                             codigo={this.state.codigo}
                             nombre={this.state.nombre}
                             idPrograma={this.state.idPrograma}
@@ -197,7 +194,7 @@ class Content extends Component {
                         <Modal2
                             id={this.state.id}
                             sigla={this.state.sigla}
-                            dni={this.state.dni}
+                            dni={this.state.dnibuscado}
                             codigo={this.state.codigo}
                             nombre={this.state.nombre}
                             idPrograma={this.state.idPrograma}
@@ -236,8 +233,42 @@ class Content extends Component {
             })
             ;
     }
+    handleBuscaAlumnoRecaudacion() {
+        let data;
+        let link = 'recaudacion/'
+        let codigo = link.concat(this.state.codigo);
+        const url = URL.url.concat(codigo);
+        //console.log(this.props);
+        // const url= 'https://api-modulocontrol.herokuapp.com/conceptos';
+        fetch(url, {
+            method: "GET",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json"
+            }
+        })
+            .then(res => res.json())
+            .then(res => {
+                if (res.status) {
+                    data = res;
+                    let error=data["data"][0]["id_rec"];
+                    this.setState({
+                        recaudacion:"encontrado"
+                    })
+                    this.handleBuscaAlumnoPrograma() ;
+                }
+            }).catch(err => {
+                this.setState({
+                    recaudacion:""
+                })
+                this.handleBuscaAlumnoPrograma() ;
+                
+            })
+            ;
+    }
     handleBuscaAlumnoPrograma() {
         let data;
+        
         let link = 'alumno/programa/'
         let codigo = link.concat(this.state.codigo);
         const url = URL.url.concat(codigo);
@@ -262,13 +293,40 @@ class Content extends Component {
                     ape_pa=ape_pa.concat(ape_ma);
                     ape_pa=ape_pa.concat(' ');
                     ape_pa=ape_pa.concat(nom);
+                    
+                    let nombrecorregido=ape_pa.replaceAll('Ñ','N');
+                    let texterror='El alumno ';
+                    let textnombre=texterror.concat(this.state.codigo);
+                    let textguion=textnombre.concat('-');
+                    let textcodigo=textguion.concat(nombrecorregido);
+                    let textoerror1=' no tiene ningún recibo de pago registrado en el Sistema'
+                    let error=textcodigo.concat(textoerror1);
                     this.setState({
-                        dni: data["data"][0]["dni_m"],
+                        dnibuscado: data["data"][0]["dni_m"],
                         idPrograma: data["data"][0]["id_programa"],
                         nombre: ape_pa
                     })
+                    console.log(this.state.recaudacion);
+                    if(this.state.recaudacion==="encontrado"){
+                        this.handleBuscaAlumno();
+                    }
+                    else{
+                        Swal.fire({
+                            title: error,
+                            text: "Desea registrar el recibo?",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Si'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                this.handleBuscaAlumno();
+                            }
+                        })
+                    }
+                                        
                     console.log(this.props);
-                    this.handleBuscaAlumno();
                 } else {
                     alert("Fallo al cargar datos, Intentelo mas tarde");
                 }
@@ -286,6 +344,7 @@ class Content extends Component {
         var arra={
             codigo: this.state.codigo
         }
+        
         const url = URL.url.concat('alumno/detallado/codigo/');
         // const url= 'https://api-modulocontrol.herokuapp.com/conceptos';
         fetch(url, {
@@ -314,8 +373,8 @@ class Content extends Component {
                 }
             }).catch(err => {
                 Swal.fire({
-                    title: 'Alumno no encontrado',
-                    text: "Desea ingresar el recibo?",
+                    title: 'Este alumno no se encuentra registrado',
+                    text: "Desea registrarlo con su recibo?",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',

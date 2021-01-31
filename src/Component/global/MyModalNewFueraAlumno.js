@@ -19,6 +19,7 @@ class MyModal extends Component {
     };
     this.añadido = "";
     this.dni="";
+    this.nombre="";
   }
   componentWillMount() {
     let data;
@@ -91,7 +92,7 @@ class MyModal extends Component {
   async handlerGuardarAlumno2(data) {
     var dataAlumno = {};
     dataAlumno.cod_alum = this.props.codigo;
-    dataAlumno.nombre = document.getElementById("nombre").value;
+    dataAlumno.nombre = this.nombre;
     dataAlumno.dni = this.dni;
     console.log(dataAlumno);
     this.dni = dataAlumno.dni;
@@ -112,19 +113,7 @@ class MyModal extends Component {
       })
       const responseJson = await response.json();
       if (response.ok) {
-        Swal.fire({
-          title: 'Registrando Recaudacion',
-          text: "Seguro?",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Si'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            this.handleBuscaAlumno(data);
-          }
-        })
+        this.handleBuscaAlumno(data);
       } else {
         alert("FALLÓ OPERACIÓN, ESPERE UN MOMENTO Y VUELVA A INTENTARLO ");
       }
@@ -173,6 +162,7 @@ class MyModal extends Component {
     } else {
       verif = false;
     }
+    this.nombre=document.getElementById("nombre").value;
     this.dni=document.getElementById("dnialumno").value;
     var data = {};
     data.id_alum = this.añadido;
@@ -200,7 +190,32 @@ class MyModal extends Component {
       data.id_tipo !== "" ||
       data.id_tipo !== "undefined"
     ) {
-      this.handlerGuardarAlumno2(data);
+      Swal.fire({
+        title: '¿Está seguro de registrar el recibo de pago? ',
+        text: "Seguro?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.handlerGuardarAlumno2(data);
+        }
+      })
+      /*Swal.fire({
+        title: 'Registrando Recaudacion',
+        text: "Seguro?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.handleBuscaAlumno(data);
+        }
+      })*/
 
       console.log(this.añadido);
       data.id_alum = this.añadido;
@@ -407,6 +422,7 @@ class MyModal extends Component {
                   placeholder="DNI"
                   id="dnialumno"
                   value={dni}
+                  maxLength="8"
                   disabled
                   required
                 />
